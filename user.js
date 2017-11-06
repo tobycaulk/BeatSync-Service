@@ -39,23 +39,24 @@ function insertUser(email, username, hashedPassword) {
 
 function create(email, username, password) {
     return new Promise((resolve, reject) => {
-        Promise.all([checkIfUsernameIsTaken(username), getHashedPassword(password)]) 
-        .then(data => {
-            if(data[0]) {
-                reject(errorCodes.user.username.taken);
-            } else {
-                insertUser(email, username, data[1])
-                    .then(user => resolve(scrubUser(user)))
-                    .catch(err => {
-                        console.log("Error while inserting user into DB [" + err + "]");
-                        reject(errorCodes.generic);
-                    });
-            }
-        })
-        .catch(err => {
-            console.log("Error while creating user [" + err + "]");
-            reject(errorCodes.generic);
-        });
+        Promise
+            .all([checkIfUsernameIsTaken(username), getHashedPassword(password)]) 
+            .then(data => {
+                if(data[0]) {
+                    reject(errorCodes.user.username.taken);
+                } else {
+                    insertUser(email, username, data[1])
+                        .then(user => resolve(scrubUser(user)))
+                        .catch(err => {
+                            console.log("Error while inserting user into DB [" + err + "]");
+                            reject(errorCodes.generic);
+                        });
+                }
+            })
+            .catch(err => {
+                console.log("Error while creating user [" + err + "]");
+                reject(errorCodes.generic);
+            });
     });
 }
 
