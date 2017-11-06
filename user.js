@@ -17,11 +17,7 @@ function checkIfUsernameIsTaken(username) {
                 username: username
             })
             .then(user => {
-                if(user.length > 0) {
-                    resolve(true);
-                } else {
-                    resolve(false);
-                }
+                resolve(user.length > 0);
             })
             .catch(err => reject(err));
     });

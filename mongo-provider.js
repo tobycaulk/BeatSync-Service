@@ -7,7 +7,7 @@ function callbackHandler(resolve, reject, err, docs) {
     } else {
         resolve(docs);
     }
-};
+}
 
 function getCollection(col) {
     let db = mongojs(config.mongo.db);
