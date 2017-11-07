@@ -1,3 +1,4 @@
+const S = require('string');
 const mongoProvider = require('./mongo-provider');
 const passwordProvider = require('./password-provider');
 const config = require('./config');
@@ -64,23 +65,66 @@ function get(id) {
     return new Promise((resolve, reject) => {
         mongoProvider
             .findOne(collection, {
-                _id: new mongoProvider.objectId(id)
+                _id: mongoProvider.objectId(id)
             })
             .then(user => {
                 if(user === undefined) {
                     reject(errorCodes.user.notFound);
                 } else {
-                    resolve(user);
+                    resolve(scrubUser(user));
                 }
             })
             .catch(err => {
-                console.log("error while getting user with id[" + id + "]. Error [" + err + "]");
+                console.log("Error while getting user with id[" + id + "]. Error [" + err + "]");
                 reject(errorCodes.generic);
             });
     });
 }
 
-function update() {}
+function getUpdateableFieldContainer(name, value) {
+    return {
+        name: name,
+        value: value
+    }
+}
+
+function getUpdateFields(fields) {
+    let update = {};
+    fields.forEach((field) => {
+        if(!S(field.value).isEmpty()) {
+            update[field.name] = field.value;
+        }
+    });
+
+    return update;
+}
+
+function update(id, email, username, password) {
+    return new Promise((resolve, reject) => {
+        let update = getUpdateFields([
+            getUpdateableFieldContainer("email", email), 
+            getUpdateableFieldContainer("username", username), 
+            getUpdateableFieldContainer("password", passwordProvider.hash(password))]);
+
+        mongoProvider
+            .update(collection, {
+                _id: mongoProvider.objectId(id)
+            }, update)
+            .then(success => {
+                get(id)
+                    .then(user => resolve(user))
+                    .catch(err => {
+                        console.log("Error while getting user after update with id[" + id + "]. Error [" + err + "]");
+                        reject(errorCodes.generic);
+                    });
+            })
+            .catch(err => {
+                console.log("Error while updating user with id[" + id + "]. Error [" + err + "]");
+                reject(errorCodes.generic);
+            });
+    });
+}
+
 function remove() {}
 
 module.exports = {

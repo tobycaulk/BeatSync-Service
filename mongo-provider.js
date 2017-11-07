@@ -15,7 +15,7 @@ function getCollection(col) {
 }
 
 module.exports = {
-    objectId: mongojs.objectId,
+    objectId: mongojs.ObjectId,
     save: (col, obj) => {
         return new Promise((resolve, reject) => {
             getCollection(col).save(obj, (err, doc) => {
@@ -46,9 +46,16 @@ module.exports = {
     },
     update: (col, query, update) => {
         return new Promise((resolve, reject) => {
-            getCollection(col).update(query, update, { multi: true }, () => {
+            getCollection(col).update(query, { $set: update }, { multi: true }, () => {
                 callbackHandler(resolve, reject, null, {});
             })
+        });
+    },
+    remove: (col, query) => {
+        return new Promise((resolve, reject) => {
+            getCollection(col).remove(query, (err, lastErrorObject) => {
+                callbackHandler(resolve, reject, err, {});
+            });
         });
     }
 };
