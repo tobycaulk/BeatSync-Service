@@ -104,7 +104,7 @@ function update(id, email, username, password) {
         let update = getUpdateFields([
             getUpdateableFieldContainer("email", email), 
             getUpdateableFieldContainer("username", username), 
-            getUpdateableFieldContainer("password", passwordProvider.hash(password))]);
+            getUpdateableFieldContainer("hashedPassword", passwordProvider.hashSync(password))]);
 
         mongoProvider
             .update(collection, {
@@ -125,7 +125,19 @@ function update(id, email, username, password) {
     });
 }
 
-function remove() {}
+function remove(id) {
+    return new Promise((resolve, reject) => {
+        mongoProvider
+            .remove(collection, {
+                _id: mongoProvider.objectId(id)
+            })
+            .then(success => resolve({ success: true }))
+            .catch(err => {
+                console.log("Error while removing user with id[" + id + "]. Error [" + err + "]");
+                reject(errorCodes.generic);
+            });
+    });
+}
 
 module.exports = {
     create: create,

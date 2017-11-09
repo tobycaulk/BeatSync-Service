@@ -12,6 +12,10 @@ function hash(plain) {
     });
 }
 
+function hashSync(plain) {
+    return bcrypt.hashSync(plain);
+}
+
 function check(hashed, plain) {
     return new Promise((resolve, reject) => {
         bcrypt.compare(plain, hashed, (err, res) => {
@@ -26,5 +30,6 @@ function check(hashed, plain) {
 
 module.exports = {
     hash: hash,
+    hashSync: hashSync,
     check: check
 };
