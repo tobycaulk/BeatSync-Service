@@ -39,8 +39,8 @@ module.exports = {
     },
     insert: (col, obj) => {
         return new Promise((resolve, reject) => {
-            getCollection(col).insert(obj, (err, docs) => {
-                callbackHandler(resolve, reject, err, docs);
+            getCollection(col).insert(obj, (err, doc) => {
+                callbackHandler(resolve, reject, err, doc);
             });
         });
     },

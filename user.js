@@ -69,7 +69,7 @@ function get(id) {
             })
             .then(user => {
                 if(user === undefined) {
-                    reject(errorCodes.user.notFound);
+                    reject(errorCodes.notFound);
                 } else {
                     resolve(scrubUser(user));
                 }

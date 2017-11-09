@@ -5,7 +5,8 @@ module.exports = {
     mongo: {
         db: 'beatsync',
         collections: {
-            user: 'user'
+            user: 'user',
+            bandSession: 'bandSession'
         }
     }
 };
