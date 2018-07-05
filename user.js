@@ -3,6 +3,7 @@ const mongoProvider = require('./mongo-provider');
 const passwordProvider = require('./password-provider');
 const config = require('./config');
 const errorCodes = require('./error-codes');
+const updateFieldHandler = require('./update-field-handler');
 
 let collection = config.mongo.collections.user;
 
@@ -81,30 +82,12 @@ function get(id) {
     });
 }
 
-function getUpdateableFieldContainer(name, value) {
-    return {
-        name: name,
-        value: value
-    }
-}
-
-function getUpdateFields(fields) {
-    let update = {};
-    fields.forEach((field) => {
-        if(!S(field.value).isEmpty()) {
-            update[field.name] = field.value;
-        }
-    });
-
-    return update;
-}
-
 function update(id, email, username, password) {
     return new Promise((resolve, reject) => {
-        let update = getUpdateFields([
-            getUpdateableFieldContainer("email", email), 
-            getUpdateableFieldContainer("username", username), 
-            getUpdateableFieldContainer("hashedPassword", passwordProvider.hashSync(password))]);
+        let update = updateFieldHandler.getUpdateFields([
+            updateFieldHandler.getUpdateableFieldContainer("email", email), 
+            updateFieldHandler.getUpdateableFieldContainer("username", username), 
+            updateFieldHandler.getUpdateableFieldContainer("hashedPassword", passwordProvider.hashSync(password))]);
 
         mongoProvider
             .update(collection, {
